@@ -1,5 +1,10 @@
+
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:id="@+id/map"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="fill_parent"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    android:layout_height="fill_parent" android:id="@+id/map"
     tools:context="com.example.leon.transitalarm20.MapsActivity"
-    android:name="com.google.android.gms.maps.SupportMapFragment" />
+    android:name="com.google.android.gms.maps.SupportMapFragment"
+/>
+
+
