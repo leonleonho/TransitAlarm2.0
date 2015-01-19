@@ -1,5 +1,6 @@
 package com.example.leon.transitalarm20;
 
+import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
