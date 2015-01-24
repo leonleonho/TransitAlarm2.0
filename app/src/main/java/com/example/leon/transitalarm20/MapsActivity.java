@@ -1,25 +1,37 @@
 package com.example.leon.transitalarm20;
 
-import android.app.Fragment;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.ActionBarActivity;
-
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends FragmentActivity {
+public class MapsActivity extends FragmentActivity implements
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-
+    private GoogleApiClient mGoogleApiClient;
+    private LatLng currentPos;//Current position
+    private LocationRequest mLocationRequest;
+    private Boolean mRequestingLocationUpdates = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        mGoogleApiClient.connect();
     }
 
     @Override
@@ -65,5 +77,80 @@ public class MapsActivity extends FragmentActivity {
      */
     private void setUpMap() {
         mMap.setMyLocationEnabled(true);
+    }
+
+    /**
+     * We are connected so we want to get our last known location and set the map at that position
+     * Then we wnt to check if we are getting location updates, if we arnt we want to start getting
+     * them
+     * @param bundle
+     */
+    @Override
+    public void onConnected(Bundle bundle) {
+        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        if (mLastLocation != null) {
+            currentPos = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 15));
+        }
+        if (!mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
+    }
+
+    /**
+     * If the connection is suspended stop the location servicesc
+     * @param i
+     */
+    @Override
+    public void onConnectionSuspended(int i) {
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, this);
+        mRequestingLocationUpdates = false;
+    }
+
+    /**
+     * If the connection failed stop the locatoin services
+     * @param connectionResult
+     */
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, this);
+        mRequestingLocationUpdates = false;
+    }
+
+    /**
+     * Creating a new location request, modify these values to define how we much location data
+     * we want
+     */
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    /**
+     * Create a new location request and begin getting updates
+     */
+    protected void startLocationUpdates() {
+        createLocationRequest();
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient, mLocationRequest, this);
+        mRequestingLocationUpdates = true;
+    }
+
+    /**
+     * When our location is changed we want to update our current position, and then move the camera
+     * to that postion. Afterwards we want to kill the location services as we no longer need them.
+     * @param location
+     */
+    @Override
+    public void onLocationChanged(Location location) {
+        currentPos = new LatLng(location.getLatitude(), location.getLongitude());
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 15));
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, this);
     }
 }

@@ -3,16 +3,6 @@
     android:layout_height="match_parent"
      tools:context=".MainActivity">
 
-    <TextView android:text="Press Map" android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView"
-        android:textSize="40sp"
-        android:textStyle="bold"
-        android:textAlignment="center"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="194dp" />
-
     <RadioGroup
         android:padding="0dp"
         android:layout_width="fill_parent"
@@ -67,5 +57,15 @@
         </LinearLayout>
 
     </RadioGroup>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Get Location"
+        android:id="@+id/location"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="199dp"
+        android:onClick="getLocation" />
 
 </RelativeLayout>
