@@ -1,10 +1,17 @@
 package com.example.leon.transitalarm20;
 
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingApi;
+import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -13,14 +20,21 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.List;
+
 public class MapsActivity extends FragmentActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
+    private GeofencingApi mGeoFenceApi;
     private LatLng currentPos;//Current position
     private LocationRequest mLocationRequest;
     private Boolean mRequestingLocationUpdates = false;
+    private Geofence fence;
+    private GeofencingRequest fenceRequest;
+    static final int HOUR = 3600000;
+    static final int FENCE_RADIUS = 500;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +45,7 @@ public class MapsActivity extends FragmentActivity implements
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+
         mGoogleApiClient.connect();
     }
 
@@ -87,8 +102,7 @@ public class MapsActivity extends FragmentActivity implements
      */
     @Override
     public void onConnected(Bundle bundle) {
-        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
+        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (mLastLocation != null) {
             currentPos = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 15));
@@ -139,6 +153,7 @@ public class MapsActivity extends FragmentActivity implements
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
         mRequestingLocationUpdates = true;
+
     }
 
     /**
@@ -149,8 +164,24 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     public void onLocationChanged(Location location) {
         currentPos = new LatLng(location.getLatitude(), location.getLongitude());
+
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 15));
         LocationServices.FusedLocationApi.removeLocationUpdates(
                 mGoogleApiClient, this);
+        fence = new Geofence.Builder()
+                .setCircularRegion(currentPos.latitude, currentPos.longitude, FENCE_RADIUS)//The 500 is radius in meters
+                .setExpirationDuration(HOUR)
+                .setRequestId("geofenceTest")
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+                .build();
+        fenceRequest = new GeofencingRequest.Builder()
+                .addGeofence(fence)
+                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+                .build();
+        Intent intent = new Intent(this, AlarmPage.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        mGeoFenceApi.addGeofences(mGoogleApiClient, fenceRequest, pendingIntent);
     }
+
+
 }
