@@ -1,14 +1,19 @@
 package com.example.leon.transitalarm20;
 
-import android.app.PendingIntent;
-import android.content.Intent;
+import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.TextView;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingApi;
 import com.google.android.gms.location.GeofencingRequest;
@@ -19,6 +24,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
 
@@ -35,18 +41,24 @@ public class MapsActivity extends FragmentActivity implements
     private GeofencingRequest fenceRequest;
     static final int HOUR = 3600000;
     static final int FENCE_RADIUS = 500;
+    private MarkerOptions marker;
+    private EditText addressText;
+    private Geocoder geocode;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        addressText = (EditText) findViewById(R.id.address);
+        addTextListener(addressText);
         setUpMapIfNeeded();
+        marker = new MarkerOptions().draggable(true);
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-
         mGoogleApiClient.connect();
+        geocode  = new Geocoder(this);
     }
 
     @Override
@@ -164,24 +176,41 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     public void onLocationChanged(Location location) {
         currentPos = new LatLng(location.getLatitude(), location.getLongitude());
-
+        mMap.clear();
+        marker.position(currentPos);
+        mMap.addMarker(marker);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 15));
         LocationServices.FusedLocationApi.removeLocationUpdates(
                 mGoogleApiClient, this);
-        fence = new Geofence.Builder()
-                .setCircularRegion(currentPos.latitude, currentPos.longitude, FENCE_RADIUS)//The 500 is radius in meters
-                .setExpirationDuration(HOUR)
-                .setRequestId("geofenceTest")
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
-                .build();
-        fenceRequest = new GeofencingRequest.Builder()
-                .addGeofence(fence)
-                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
-                .build();
-        Intent intent = new Intent(this, AlarmPage.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-        mGeoFenceApi.addGeofences(mGoogleApiClient, fenceRequest, pendingIntent);
     }
-
-
+    private void addTextListener(final EditText text) {
+        text.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(
+                            Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(text.getWindowToken(), 0);
+                    LatLng enteredLocation = getLocation(text.getText().toString());
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(enteredLocation, 15));
+                    mMap.clear();
+                    marker.position(enteredLocation);
+                    mMap.addMarker(marker);
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+    private LatLng getLocation(String address) {
+        List<Address> temp;
+        try {
+            temp = geocode.getFromLocationName(address, 1);
+            if(temp == null)
+                return null;
+            Address location = temp.get(0);
+            return new LatLng(location.getLatitude(), location.getLongitude());
+        }catch(Exception e){}
+        return null;
+    }
 }
