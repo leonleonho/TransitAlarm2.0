@@ -104,6 +104,14 @@ public class MapsActivity extends FragmentActivity implements
      */
     private void setUpMap() {
         mMap.setMyLocationEnabled(true);
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                mMap.clear();
+                marker.position(latLng);
+                mMap.addMarker(marker);
+            }
+        });
     }
 
     /**
