@@ -2,7 +2,6 @@ package com.example.leon.transitalarm20;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,17 +9,14 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 
 public class MainActivity extends Activity {
 
-    TextView tv;
+    String temp2 = "http://api.translink.ca/rttiapi/v1/stops?apikey=uqHksMgJHyOOpCRjXNKM&lat=49.248523&long=-123.108800&radius=500";
+    public static TextView tv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,44 +25,21 @@ public class MainActivity extends Activity {
         tv = (TextView)findViewById(R.id.tv);
     }
 
-    public void getJson(View view) {
+    public void getJSONObjectClick(View view) {
         EditText et = (EditText)findViewById(R.id.et);
         String busNo = et.getText().toString();
         tv.setText("Loading...");
-        new GetJSONTask().execute(
-                "http://api.translink.ca/rttiapi/v1/stops/" + busNo + "?apikey=uqHksMgJHyOOpCRjXNKM");
+        String url = "http://api.translink.ca/rttiapi/v1/stops/" + busNo + "?apikey=uqHksMgJHyOOpCRjXNKM";
+        JSONObject jsonObject = new Translink().getJSONObject(url);
     }
 
-    private class GetJSONTask extends AsyncTask<String, String, String> {
-        @Override
-        protected String doInBackground(String... params) {
-            HttpGet httpGet = new HttpGet(params[0]);
-            httpGet.addHeader("Accept", "application/json");
-            httpGet.addHeader("ContentType", "application/json");
-            DefaultHttpClient client = new DefaultHttpClient();
-            String result = null;
-            try {
-                HttpResponse response = client.execute(httpGet);
-                HttpEntity entity = response.getEntity();
-                result = EntityUtils.toString(entity);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            try {
-                JSONObject json = new JSONObject(s);
-                tv.setText(json.getString("Name"));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    public void getJSONArrayClick(View view) {
+        tv.setText("Loading...");
+        EditText et = (EditText)findViewById(R.id.et);
+        String busNo = et.getText().toString();
+        String url = "http://api.translink.ca/rttiapi/v1/stops?apikey=uqHksMgJHyOOpCRjXNKM&lat=49.248523&long=-123.108800&radius=500";
+        JSONArray jsonArray = new Translink().getJSONArray(temp2);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

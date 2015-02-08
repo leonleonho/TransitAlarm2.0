@@ -11,6 +11,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -110,13 +111,15 @@ public class MapsActivity extends FragmentActivity implements
                 mMap.clear();
                 marker.position(latLng);
                 mMap.addMarker(marker);
+                Toast.makeText(getApplicationContext(), marker.getPosition().toString(), Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
     /**
      * We are connected so we want to get our last known location and set the map at that position
-     * Then we wnt to check if we are getting location updates, if we arnt we want to start getting
+     * Then we wnt to check if we are getting location updates; if we aren't, we want to start getting
      * them
      * @param bundle
      */
@@ -144,7 +147,7 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     /**
-     * If the connection failed stop the locatoin services
+     * If the connection failed stop the location services
      * @param connectionResult
      */
     @Override
@@ -155,7 +158,7 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     /**
-     * Creating a new location request, modify these values to define how we much location data
+     * Creating a new location request, modify these values to define how much location data
      * we want
      */
     protected void createLocationRequest() {
