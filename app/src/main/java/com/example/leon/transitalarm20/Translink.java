@@ -79,11 +79,18 @@ public class Translink {
         private void parseArray(String s) {
             try {
                 jsonArray = new JSONArray(s);
-                jsonObject = null;
+                /*jsonObject = null;
+                JSONArray temp = null;
                 for (int i = 0; i < jsonArray.length(); i++) {
                     jsonObject = jsonArray.getJSONObject(i);
-                    MainActivity.tv.append(jsonObject.getString("Name") + "\n");
+                    MainActivity.tv.append(jsonObject.getString("RouteNo"));
+                    temp = jsonObject.getJSONArray("Schedules");
+                    for(int j = 0; j < temp.length(); j++) {
+                        MainActivity.tv.append("\nExpected Leave time:" + temp.getJSONObject(j).getString("ExpectedLeaveTime") + "\n");
+                    }
+                    MainActivity.tv.append("\n\n");
                 }
+                //MainActivity.tv.setText(jsonArray.toString());*/
 
             } catch (Exception e) {
                 e.printStackTrace();

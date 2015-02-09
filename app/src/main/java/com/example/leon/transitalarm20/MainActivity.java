@@ -37,8 +37,8 @@ public class MainActivity extends Activity {
         tv.setText("Loading...");
         EditText et = (EditText)findViewById(R.id.et);
         String busNo = et.getText().toString();
-        String url = "http://api.translink.ca/rttiapi/v1/stops?apikey=uqHksMgJHyOOpCRjXNKM&lat=49.248523&long=-123.108800&radius=500";
-        JSONArray jsonArray = new Translink().getJSONArray(temp2);
+        String url = "http://api.translink.ca/rttiapi/v1/stops/"+busNo+"/estimates?apikey=uqHksMgJHyOOpCRjXNKM";
+        JSONArray jsonArray = new Translink().getJSONArray(url);
     }
 
     @Override

@@ -5,11 +5,15 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -223,5 +227,12 @@ public class MapsActivity extends FragmentActivity implements
             return new LatLng(location.getLatitude(), location.getLongitude());
         }catch(Exception e){}
         return null;
+    }
+    public void loadSchedules(View view) {
+        Toast.makeText(getApplicationContext(), "Clicked button", Toast.LENGTH_SHORT).show();
+        BusDetails details = new BusDetails();
+        FragmentManager manager = getSupportFragmentManager();
+        manager.beginTransaction().add(R.id.busSchedule, details).commit();
+
     }
 }
