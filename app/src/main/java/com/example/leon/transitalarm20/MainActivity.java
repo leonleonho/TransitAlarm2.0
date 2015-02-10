@@ -9,13 +9,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 
+public class MainActivity extends Activity{
 
-public class MainActivity extends Activity implements AsyncTaskCompletedListener<JSONArray>{
-
-    String temp2 = "http://api.translink.ca/rttiapi/v1/stops?apikey=uqHksMgJHyOOpCRjXNKM&lat=49.248523&long=-123.108800&radius=500";
+    String temp2 = "http://api.translink.ca/rttiapi/v/stops?apikey=uqHksMgJHyOOpCRjXNKM&lat=49.248523&long=-123.108800&radius=500";
     public static TextView tv;
 
     @Override
@@ -30,7 +27,7 @@ public class MainActivity extends Activity implements AsyncTaskCompletedListener
         String busNo = et.getText().toString();
         tv.setText("Loading...");
         String url = "http://api.translink.ca/rttiapi/v1/stops/" + busNo + "?apikey=uqHksMgJHyOOpCRjXNKM";
-        new Translink(this, view).execute(url);
+        //new Translink(this).execute(url);
     }
 
     public void getJSONArrayClick(View view) {
@@ -38,7 +35,7 @@ public class MainActivity extends Activity implements AsyncTaskCompletedListener
         EditText et = (EditText)findViewById(R.id.et);
         String busNo = et.getText().toString();
         String url = "http://api.translink.ca/rttiapi/v1/stops?apikey=uqHksMgJHyOOpCRjXNKM&lat=49.248523&long=-123.108800&radius=500";
-        new Translink(this, view).execute(url);
+        //new Translink(this).execute(url);
     }
 
     @Override
@@ -53,35 +50,20 @@ public class MainActivity extends Activity implements AsyncTaskCompletedListener
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
+    /*@Override
     public void onTaskComplete(JSONArray result, View view) {
         try {
-                tv.setText("");
-                JSONArray jsonArray = (JSONArray)result;
-                JSONObject jsonObject = null;
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    jsonObject = jsonArray.getJSONObject(i);
-                    MainActivity.tv.append(jsonObject.getString("Name") + "\n");
-                }
+            tv.setText("");
+            JSONArray jsonArray = (JSONArray)result;
+            JSONObject jsonObject = null;
+            for (int i = 0; i < jsonArray.length(); i++) {
+                jsonObject = jsonArray.getJSONObject(i);
+                MainActivity.tv.append(jsonObject.getString("Name") + "\n");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        /*
-        switch (view.getId()) {
-            case R.id.JSONObjectButton:
-                try {
-                    MainActivity.tv.setText(result.getString("Name"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.JSONArrayButton:
-                break;
-            default:
-                break;
-        }
-        */
-    }
+    }*/
 
     public void gotoMap(View view) {
         Intent intent = new Intent(this, MapsActivity.class);

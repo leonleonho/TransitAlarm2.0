@@ -1,7 +1,6 @@
 package com.example.leon.transitalarm20;
 
 import android.os.AsyncTask;
-import android.view.View;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -19,21 +18,19 @@ import java.io.InputStreamReader;
  */
 public class Translink extends AsyncTask<String, String, String> {
 
-    public enum TaskType {
+    public static enum TaskType {
         STOP_ARRAY, STOP_DETAILS, BUS_TIMES
     }
 
-    AsyncTaskCompletedListener caller;
-    private View view;
-
-    public Translink(AsyncTaskCompletedListener caller, View view) {
-        this.caller = caller;
-        this.view = view;
-    }
-
+    private AsyncTaskCompletedListener caller;
     private JSONObject jsonObject;
     private JSONArray jsonArray;
-    private TaskType taskType;
+    public TaskType taskType;
+
+    public Translink(AsyncTaskCompletedListener caller, TaskType taskType) {
+        this.caller = caller;
+        this.taskType = taskType;
+    }
 
     public void printArray(String s) {
         taskType = TaskType.STOP_ARRAY;
@@ -74,7 +71,7 @@ public class Translink extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String s) {
         try {
-                caller.onTaskComplete(new JSONArray(s), view);
+                caller.onTaskComplete(new JSONArray(s), taskType);
 
         } catch (Exception e) {
             e.printStackTrace();
