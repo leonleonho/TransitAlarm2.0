@@ -1,15 +1,21 @@
 package com.example.leon.transitalarm20;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,7 +36,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener,
+        FragmentBusSchedule.OnFragmentInteractionListener {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
@@ -45,6 +52,10 @@ public class MapsActivity extends FragmentActivity implements
     private MarkerOptions marker;
     private EditText addressText;
     private Geocoder geocode;
+
+    private FragmentManager fragmentManager;
+    private FragmentTransaction fragmentTransaction;
+    private FrameLayout frameLayoutBusSchedule;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +71,7 @@ public class MapsActivity extends FragmentActivity implements
                 .build();
         mGoogleApiClient.connect();
         geocode  = new Geocoder(this);
+        frameLayoutBusSchedule = (FrameLayout)findViewById(R.id.frameLayoutBusSchedule);
     }
 
     @Override
@@ -223,5 +235,33 @@ public class MapsActivity extends FragmentActivity implements
             return new LatLng(location.getLatitude(), location.getLongitude());
         }catch(Exception e){}
         return null;
+    }
+
+    public void showSchedule(View view) {
+        fragmentManager = getFragmentManager();
+        fragmentTransaction = fragmentManager.beginTransaction();
+        FragmentBusSchedule busSchedule = new FragmentBusSchedule();
+        //fragmentTransaction.setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_top);
+
+        fragmentTransaction.add(R.id.frameLayoutBusSchedule, busSchedule, "BusSchedule");
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    public void onFragmentInteraction(String id) {
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d("CDA", "onBackPressed Called");
+        Fragment fragment = fragmentManager.findFragmentByTag("BusSchedule");
+        if (fragment != null) {
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.remove(fragment);
+            fragmentTransaction.commit();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

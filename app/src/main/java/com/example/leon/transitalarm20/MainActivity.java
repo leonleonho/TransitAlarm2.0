@@ -13,7 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements AsyncTaskCompletedListener<JSONArray>{
 
     String temp2 = "http://api.translink.ca/rttiapi/v1/stops?apikey=uqHksMgJHyOOpCRjXNKM&lat=49.248523&long=-123.108800&radius=500";
     public static TextView tv;
@@ -30,7 +30,7 @@ public class MainActivity extends Activity {
         String busNo = et.getText().toString();
         tv.setText("Loading...");
         String url = "http://api.translink.ca/rttiapi/v1/stops/" + busNo + "?apikey=uqHksMgJHyOOpCRjXNKM";
-        JSONObject jsonObject = new Translink().getJSONObject(url);
+        new Translink(this, view).execute(url);
     }
 
     public void getJSONArrayClick(View view) {
@@ -38,7 +38,7 @@ public class MainActivity extends Activity {
         EditText et = (EditText)findViewById(R.id.et);
         String busNo = et.getText().toString();
         String url = "http://api.translink.ca/rttiapi/v1/stops?apikey=uqHksMgJHyOOpCRjXNKM&lat=49.248523&long=-123.108800&radius=500";
-        JSONArray jsonArray = new Translink().getJSONArray(temp2);
+        new Translink(this, view).execute(url);
     }
 
     @Override
@@ -50,20 +50,39 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        super.onOptionsItemSelected(item);
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        //int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        /*
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        */
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onTaskComplete(JSONArray result, View view) {
+        try {
+                tv.setText("");
+                JSONArray jsonArray = (JSONArray)result;
+                JSONObject jsonObject = null;
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    jsonObject = jsonArray.getJSONObject(i);
+                    MainActivity.tv.append(jsonObject.getString("Name") + "\n");
+                }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        /*
+        switch (view.getId()) {
+            case R.id.JSONObjectButton:
+                try {
+                    MainActivity.tv.setText(result.getString("Name"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.JSONArrayButton:
+                break;
+            default:
+                break;
+        }
+        */
+    }
+
     public void gotoMap(View view) {
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);

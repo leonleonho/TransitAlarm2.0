@@ -1,6 +1,7 @@
 package com.example.leon.transitalarm20;
 
 import android.os.AsyncTask;
+import android.view.View;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -16,78 +17,102 @@ import java.io.InputStreamReader;
 /**
  * Created by Jens on 2/7/2015.
  */
-public class Translink {
-    JSONObject jsonObject;
-    JSONArray jsonArray;
+public class Translink extends AsyncTask<String, String, String> {
 
-    public JSONArray getJSONArray(String s) {
-        new GetJSONTask().execute(s);
-        return jsonArray;
+    public enum TaskType {
+        STOP_ARRAY, STOP_DETAILS, BUS_TIMES
     }
 
-    public JSONObject getJSONObject(String s) {
-        new GetJSONTask().execute(s);
-        return jsonObject;
+    AsyncTaskCompletedListener caller;
+    private View view;
+
+    public Translink(AsyncTaskCompletedListener caller, View view) {
+        this.caller = caller;
+        this.view = view;
     }
 
-    private class GetJSONTask extends AsyncTask<String, String, String> {
-        @Override
-        protected String doInBackground(String... params) {
-            HttpGet httpGet = new HttpGet(params[0]);
-            httpGet.addHeader("Accept", "application/json");
-            httpGet.addHeader("ContentType", "application/json");
-            DefaultHttpClient client = new DefaultHttpClient();
-            String result = null;
-            try {
-                HttpResponse response = client.execute(httpGet);
-                HttpEntity entity = response.getEntity();
-                //result = EntityUtils.toString(entity);
-                InputStream inputStream = entity.getContent();
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                StringBuilder stringBuilder = new StringBuilder();
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    stringBuilder.append(line + "\n");
-                }
-                result = stringBuilder.toString();
-            } catch (Exception e) {
-                e.printStackTrace();
+    private JSONObject jsonObject;
+    private JSONArray jsonArray;
+    private TaskType taskType;
+
+    public void printArray(String s) {
+        taskType = TaskType.STOP_ARRAY;
+        execute(s);
+    }
+
+    public void printBusNo(String s) {
+        taskType = TaskType.BUS_TIMES;
+        execute(s);
+    }
+
+    @Override
+    protected String doInBackground(String... params) {
+        HttpGet httpGet = new HttpGet(params[0]);
+        httpGet.addHeader("Accept", "application/json");
+        httpGet.addHeader("ContentType", "application/json");
+        DefaultHttpClient client = new DefaultHttpClient();
+        String result = null;
+        try {
+            HttpResponse response = client.execute(httpGet);
+            HttpEntity entity = response.getEntity();
+            //result = EntityUtils.toString(entity);
+            InputStream inputStream = entity.getContent();
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuilder stringBuilder = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line + "\n");
             }
-            return result;
+            result = stringBuilder.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
+    protected void onPostExecute(String s) {
+        try {
+                caller.onTaskComplete(new JSONArray(s), view);
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        @Override
-        protected void onPostExecute(String s) {
-            MainActivity.tv.setText("");
-            if (s.charAt(0) == '[') {
-                parseArray(s);
-            } else {
-                parseObject(s);
-            }
+
+
+        /*
+        MainActivity.tv.setText("");
+        if (s.charAt(0) == '[') {
+            parseArray(s);
+        } else {
+            parseObject(s);
         }
+        */
+    }
 
-        private void parseObject(String s) {
-            try {
-                jsonObject = new JSONObject(s);
-                MainActivity.tv.setText(jsonObject.getString("Name"));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        private void parseArray(String s) {
-            try {
-                jsonArray = new JSONArray(s);
-                jsonObject = null;
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    jsonObject = jsonArray.getJSONObject(i);
-                    MainActivity.tv.append(jsonObject.getString("Name") + "\n");
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    private void parseObject(String s) {
+        try {
+            jsonObject = new JSONObject(s);
+            MainActivity.tv.setText(jsonObject.getString("Name"));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+
+    private void parseArray(String s) {
+        try {
+            jsonArray = new JSONArray(s);
+            jsonObject = null;
+            for (int i = 0; i < jsonArray.length(); i++) {
+                jsonObject = jsonArray.getJSONObject(i);
+                MainActivity.tv.append(jsonObject.getString("Name") + "\n");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
