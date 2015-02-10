@@ -76,6 +76,7 @@ public class MapsActivity extends FragmentActivity implements
         mGoogleApiClient.connect();
         geocode  = new Geocoder(this);
         frameLayoutBusSchedule = (FrameLayout)findViewById(R.id.frameLayoutBusSchedule);
+        fragmentManager = getFragmentManager();
     }
 
     @Override
@@ -291,9 +292,9 @@ public class MapsActivity extends FragmentActivity implements
 
     @Override
     public void onBackPressed() {
-        Log.d("CDA", "onBackPressed Called");
         Fragment fragment = fragmentManager.findFragmentByTag("BusSchedule");
         if (fragment != null) {
+
             fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.remove(fragment);
             fragmentTransaction.commit();
