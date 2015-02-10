@@ -17,7 +17,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -33,11 +32,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener,
-        FragmentBusSchedule.OnFragmentInteractionListener {
+        FragmentBusSchedule.OnFragmentInteractionListener, AsyncTaskCompletedListener<JSONArray> {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
@@ -56,6 +58,8 @@ public class MapsActivity extends FragmentActivity implements
     private FragmentManager fragmentManager;
     private FragmentTransaction fragmentTransaction;
     private FrameLayout frameLayoutBusSchedule;
+    private Translink task;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,9 +127,42 @@ public class MapsActivity extends FragmentActivity implements
                 mMap.clear();
                 marker.position(latLng);
                 mMap.addMarker(marker);
-                Toast.makeText(getApplicationContext(), marker.getPosition().toString(), Toast.LENGTH_SHORT).show();
+                showStops(latLng);
             }
         });
+    }
+
+    private void showStops(LatLng latLng) {
+        String url = "http://api.translink.ca/rttiapi/v1/stops?apikey=uqHksMgJHyOOpCRjXNKM&lat=" + (float)latLng.latitude + "&long=" + (float)latLng.longitude;
+        Log.w("URL" , url);
+        new Translink(this, Translink.TaskType.STOP_ARRAY).execute(url);
+    }
+
+    @Override
+    public void onTaskComplete(JSONArray result, Translink.TaskType type) {
+
+        try {
+            switch (type) {
+                case STOP_ARRAY:
+                    for(int i = 0; i < result.length(); i++) {
+                        JSONObject temp = result.getJSONObject(i);
+                        LatLng latLng = new LatLng(temp.getDouble("Latitude"), temp.getDouble("Longitude"));
+                        MarkerOptions options = new MarkerOptions();
+                        options.position(latLng);
+                        mMap.addMarker(options);
+                    }
+                    break;
+                case STOP_DETAILS:
+                    break;
+                case BUS_TIMES:
+                    break;
+                default:
+                    break;
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
 
     }
 
@@ -264,4 +301,5 @@ public class MapsActivity extends FragmentActivity implements
             super.onBackPressed();
         }
     }
+
 }
