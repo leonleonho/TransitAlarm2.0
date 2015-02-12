@@ -73,7 +73,7 @@
                 android:padding="10dp"
                 android:text="Map"
                 android:id="@+id/button2"
-                android:textColor="#eeeeff"
+                android:textColor="#ffffff"
                 android:background="#ff5cbeff"
                 android:clickable="true"
                 android:onClick="gotoMap" />
@@ -85,7 +85,7 @@
                 android:padding="10dp"
                 android:text="My Places"
                 android:id="@+id/button3"
-                android:textColor="#eeeeff"
+                android:textColor="#ffffff"
                 android:background="#ff5cbeff"
                 android:clickable="true" />
 
@@ -96,7 +96,7 @@
                 android:padding="10dp"
                 android:text="Sumfin"
                 android:id="@+id/button4"
-                android:textColor="#eeeeff"
+                android:textColor="#ffffff"
                 android:background="#ff5cbeff"
                 android:clickable="true" />
         </LinearLayout>

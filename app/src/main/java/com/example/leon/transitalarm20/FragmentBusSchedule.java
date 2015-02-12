@@ -14,6 +14,10 @@ import android.widget.TextView;
 
 import com.example.leon.transitalarm20.dummy.DummyContent;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 /**
@@ -27,7 +31,8 @@ import java.util.ArrayList;
  */
 public class FragmentBusSchedule extends Fragment implements AbsListView.OnItemClickListener {
 
-
+    private JSONArray array;
+    private ArrayList<String> test;
 
     private OnFragmentInteractionListener mListener;
 
@@ -57,6 +62,10 @@ public class FragmentBusSchedule extends Fragment implements AbsListView.OnItemC
     public FragmentBusSchedule() {
     }
 
+    public void addJSONArray(JSONArray array) {
+        this.array = array;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +75,7 @@ public class FragmentBusSchedule extends Fragment implements AbsListView.OnItemC
 
         // TODO: Change Adapter to display your content
         //mAdapter = new ArrayAdapter<DummyContent.DummyItem>(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS);
-        ArrayList<String> test = new ArrayList<String>();
+        /*
         test.add("Hello");
         test.add("World");
         test.add("asdf");
@@ -79,8 +88,23 @@ public class FragmentBusSchedule extends Fragment implements AbsListView.OnItemC
         test.add("World");
         test.add("asdf");
         test.add("qwaer");
+        */
+        test = new ArrayList<String>();
+        try {
+            for (int i = 0; i < array.length(); ++i) {
+                JSONObject temp = array.getJSONObject(i);
+                test.add(temp.getString("RouteName"));
+                JSONArray schedules = temp.getJSONArray("Schedules");
+                for (int j = 0; j < schedules.length(); ++j) {
+                    JSONObject time = schedules.getJSONObject(j);
+                    test.add("\t" + time.getString("ExpectedLeaveTime"));
+                }
+            }
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+
         mAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, test);
-        test.add("after");
     }
 
     @Override

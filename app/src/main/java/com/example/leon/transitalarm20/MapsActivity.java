@@ -29,7 +29,9 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
@@ -131,6 +133,14 @@ public class MapsActivity extends FragmentActivity implements
                 showStops(latLng);
             }
         });
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                int stopNo = Integer.parseInt(marker.getTitle());
+                getStopInfo(stopNo);
+                return false;
+            }
+        });
     }
 
     private void showStops(LatLng latLng) {
@@ -138,6 +148,14 @@ public class MapsActivity extends FragmentActivity implements
         Log.w("URL" , url);
         new Translink(this, Translink.TaskType.STOP_ARRAY).execute(url);
     }
+
+    private void getStopInfo(int stopNo) {
+        String url = "http://api.translink.ca/rttiapi/v1/stops/60980/estimates?apikey=uqHksMgJHyOOpCRjXNKM";
+        Log.w("URL", url);
+        new Translink(this, Translink.TaskType.STOP_DETAILS).execute(url);
+    }
+
+
 
     @Override
     public void onTaskComplete(JSONArray result, Translink.TaskType type) {
@@ -150,12 +168,21 @@ public class MapsActivity extends FragmentActivity implements
                         LatLng latLng = new LatLng(temp.getDouble("Latitude"), temp.getDouble("Longitude"));
                         MarkerOptions options = new MarkerOptions();
                         options.position(latLng);
+                        options.icon(BitmapDescriptorFactory.fromResource(R.drawable.bus_marker));
+                        options.title(temp.getString("StopNo"));
                         mMap.addMarker(options);
                     }
                     break;
                 case STOP_DETAILS:
+                    fragmentManager = getFragmentManager();
+                    fragmentTransaction = fragmentManager.beginTransaction();
+                    FragmentBusSchedule fragmentBusSchedule = new FragmentBusSchedule();
+                    fragmentBusSchedule.addJSONArray(result);
+                    fragmentTransaction.add(R.id.frameLayoutBusSchedule, fragmentBusSchedule, "BusSchedule");
+                    fragmentTransaction.commit();
                     break;
                 case BUS_TIMES:
+
                     break;
                 default:
                     break;
@@ -165,6 +192,18 @@ public class MapsActivity extends FragmentActivity implements
         }
 
 
+    }
+
+    private void showBuses() {
+
+    }
+
+    public void showSchedule(View view) {
+        fragmentManager = getFragmentManager();
+        fragmentTransaction = fragmentManager.beginTransaction();
+        FragmentBusSchedule busSchedule = new FragmentBusSchedule();
+        fragmentTransaction.add(R.id.frameLayoutBusSchedule, busSchedule, "BusSchedule");
+        fragmentTransaction.commit();
     }
 
     /**
@@ -275,15 +314,6 @@ public class MapsActivity extends FragmentActivity implements
         return null;
     }
 
-    public void showSchedule(View view) {
-        fragmentManager = getFragmentManager();
-        fragmentTransaction = fragmentManager.beginTransaction();
-        FragmentBusSchedule busSchedule = new FragmentBusSchedule();
-        //fragmentTransaction.setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_top);
-
-        fragmentTransaction.add(R.id.frameLayoutBusSchedule, busSchedule, "BusSchedule");
-        fragmentTransaction.commit();
-    }
 
     @Override
     public void onFragmentInteraction(String id) {

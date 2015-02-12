@@ -35,7 +35,7 @@ public class MainActivity extends Activity{
         EditText et = (EditText)findViewById(R.id.et);
         String busNo = et.getText().toString();
         String url = "http://api.translink.ca/rttiapi/v1/stops?apikey=uqHksMgJHyOOpCRjXNKM&lat=49.248523&long=-123.108800&radius=500";
-        //new Translink(this).execute(url);
+        //new Translink(this, Translink.TaskType.STOP_ARRAY).execute(url);
     }
 
     @Override
