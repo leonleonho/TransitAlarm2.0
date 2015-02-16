@@ -89,7 +89,7 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     private void getStopInfo(int stopNo) {
-        String url = "http://api.translink.ca/rttiapi/v1/stops/60980/estimates?apikey=uqHksMgJHyOOpCRjXNKM";
+        String url = "http://api.translink.ca/rttiapi/v1/stops/"+stopNo+"/estimates?apikey=uqHksMgJHyOOpCRjXNKM";
         Log.w("URL", url);
         new Translink(this, Translink.TaskType.STOP_DETAILS).execute(url);
     }
