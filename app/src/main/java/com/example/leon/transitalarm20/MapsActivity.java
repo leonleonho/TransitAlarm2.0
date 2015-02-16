@@ -16,6 +16,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -33,6 +34,7 @@ public class MapsActivity extends FragmentActivity implements
         FragmentBusSchedule.OnFragmentInteractionListener, AsyncTaskCompletedListener<JSONArray> {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    private GoogleApiClient mGoogleApiClient;
     private MarkerOptions marker;
     private EditText addressText;
     private Geocoder geocode;
@@ -49,6 +51,7 @@ public class MapsActivity extends FragmentActivity implements
         map = new Map(getApplicationContext(), getSupportFragmentManager(), marker);
         map.setUpMapIfNeeded();
         mMap = map.getMap();
+        mGoogleApiClient = map.getApiClient();
         addMapListeners();
         geocode  = new Geocoder(this);
         fragmentManager = getFragmentManager();
@@ -175,5 +178,10 @@ public class MapsActivity extends FragmentActivity implements
         } else {
             super.onBackPressed();
         }
+    }
+    public void setGeofence(View view) {
+        GeoFence geoFence = new GeoFence(getApplicationContext(), mGoogleApiClient);
+        geoFence.addGeoFence(marker.getPosition());
+        geoFence.createRequest();
     }
 }

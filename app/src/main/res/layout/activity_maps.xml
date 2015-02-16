@@ -62,12 +62,12 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:padding="10dp"
-                android:text="GetLocation"
+                android:text="Set Alarm"
                 android:id="@+id/button4"
                 android:textColor="#eeeeff"
                 android:background="#ff5cbeff"
                 android:clickable="true"
-                android:onClick="returnLocation" />
+                android:onClick="setGeofence" />
         </LinearLayout>
 
     </RadioGroup>
