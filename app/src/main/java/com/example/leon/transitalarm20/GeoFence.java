@@ -9,7 +9,8 @@ import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.location.GeofencingApi;
+
+
 
 /**
  * Created by Leon on 15/02/2015.
@@ -20,8 +21,9 @@ public class GeoFence {
     GoogleApiClient mGoogleApiClient;
     public static final float RADIUS = 250;//Radius of when to fire geofence in meters
     public static final long HOUR = 3600000; //One hour in milliseconds
-    public static final int FIVE_SECONDS = 5000;
+    public static final int RESPONSE_TIME = 0;
     private Context applicationContext;
+
     public GeoFence(Context applicationContext, GoogleApiClient mGoogleApiClient) {
         this.mGoogleApiClient = mGoogleApiClient;
         this.applicationContext = applicationContext;
@@ -31,8 +33,8 @@ public class GeoFence {
                 .setCircularRegion(latlng.latitude, latlng.longitude, RADIUS)
                 .setExpirationDuration(HOUR)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
-                .setNotificationResponsiveness(FIVE_SECONDS)
-                .setRequestId("a test")
+                .setNotificationResponsiveness(RESPONSE_TIME)
+                .setRequestId("reqId1")
                 .build();
     }
     public void createRequest() {
