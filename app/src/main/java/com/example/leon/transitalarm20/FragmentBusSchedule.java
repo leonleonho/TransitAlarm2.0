@@ -3,6 +3,7 @@ package com.example.leon.transitalarm20;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +12,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
-
-import com.example.leon.transitalarm20.dummy.DummyContent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,7 +28,8 @@ import java.util.ArrayList;
  * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
  * interface.
  */
-public class FragmentBusSchedule extends Fragment implements AbsListView.OnItemClickListener {
+public class FragmentBusSchedule extends Fragment implements    AbsListView.OnItemClickListener,
+                                                                AsyncTaskCompletedListener<JSONArray> {
 
     private JSONArray array;
     private ArrayList<String> test;
@@ -122,6 +122,8 @@ public class FragmentBusSchedule extends Fragment implements AbsListView.OnItemC
         return view;
     }
 
+
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -142,6 +144,22 @@ public class FragmentBusSchedule extends Fragment implements AbsListView.OnItemC
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        TextView clickedView = (TextView) view;
+        try {
+            JSONObject json = array.getJSONObject(0);
+            Log.w("json", json.toString());
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+        //new Translink(this, Translink.TaskType.BUS_TIMES).execute(url);
+
+        Log.w("onItemClick", array.toString());
+
+    }
+
+    @Override
+    public void onTaskComplete(JSONArray result, Translink.TaskType type) {
+
     }
 
     /**

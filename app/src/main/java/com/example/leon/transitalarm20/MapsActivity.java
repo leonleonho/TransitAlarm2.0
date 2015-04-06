@@ -127,7 +127,6 @@ public class MapsActivity extends FragmentActivity implements
         }
     }
 
-    private void showBuses() {}
     public void showSchedule(View view) {
         fragmentManager = getFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
