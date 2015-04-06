@@ -72,23 +72,6 @@ public class FragmentBusSchedule extends Fragment implements    AbsListView.OnIt
 
         if (getArguments() != null) {
         }
-
-        // TODO: Change Adapter to display your content
-        //mAdapter = new ArrayAdapter<DummyContent.DummyItem>(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS);
-        /*
-        test.add("Hello");
-        test.add("World");
-        test.add("asdf");
-        test.add("qwaer");
-        test.add("Hello");
-        test.add("World");
-        test.add("asdf");
-        test.add("qwaer");
-        test.add("Hello");
-        test.add("World");
-        test.add("asdf");
-        test.add("qwaer");
-        */
         test = new ArrayList<String>();
         try {
             for (int i = 0; i < array.length(); ++i) {
@@ -151,7 +134,7 @@ public class FragmentBusSchedule extends Fragment implements    AbsListView.OnIt
         } catch (JSONException ex) {
             ex.printStackTrace();
         }
-        //new Translink(this, Translink.TaskType.BUS_TIMES).execute(url);
+        //new Translink(this, Transl    ink.TaskType.BUS_TIMES).execute(url);
 
         Log.w("onItemClick", array.toString());
 

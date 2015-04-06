@@ -48,7 +48,7 @@ public class MapsActivity extends FragmentActivity implements
         addressText = (EditText) findViewById(R.id.address);
         addTextListener(addressText);
         marker = new MarkerOptions().draggable(true);
-        map = new Map(getApplicationContext(), getSupportFragmentManager(), marker);
+        map = new Map(this, getSupportFragmentManager(), marker);
         map.setUpMapIfNeeded();
         mMap = map.getMap();
         mGoogleApiClient = map.getApiClient();
@@ -82,7 +82,7 @@ public class MapsActivity extends FragmentActivity implements
             }
         });
     }
-    private void showStops(LatLng latLng) {
+    protected void showStops(LatLng latLng) {
         String url = "http://api.translink.ca/rttiapi/v1/stops?apikey=uqHksMgJHyOOpCRjXNKM&lat=" + (float)latLng.latitude + "&long=" + (float)latLng.longitude;
         Log.w("URL" , url);
         new Translink(this, Translink.TaskType.STOP_ARRAY).execute(url);

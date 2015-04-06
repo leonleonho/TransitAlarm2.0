@@ -27,9 +27,11 @@ public class Map implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient
     private LatLng currentPos;
     private FragmentManager fragmentManager;
     private LocationRequest mLocationRequest;
+    private MapsActivity map;
     private MarkerOptions marker;
-    public Map(Context applicationContext, FragmentManager fragmentManager, MarkerOptions marker) {
-        this.applicationContext = applicationContext;
+    public Map(MapsActivity map, FragmentManager fragmentManager, MarkerOptions marker) {
+        this.applicationContext = map;
+        this.map = map;
         this.fragmentManager = fragmentManager;
         this.marker = marker;
         mGoogleApiClient = new GoogleApiClient.Builder(this.applicationContext)
@@ -122,6 +124,7 @@ public class Map implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 15));
         LocationServices.FusedLocationApi.removeLocationUpdates(
                 mGoogleApiClient, this);
+        map.showStops(new LatLng(location.getLatitude(), location.getLongitude()));
     }
     public GoogleMap getMap() {
         return mMap;

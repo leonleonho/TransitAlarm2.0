@@ -39,29 +39,6 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:padding="10dp"
-                android:text="Map"
-                android:id="@+id/button2"
-                android:textColor="#eeeeff"
-                android:background="#ff5cbeff"
-                android:clickable="true" />
-
-            <Button
-                android:layout_height="wrap_content"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:padding="10dp"
-                android:text="My Places"
-                android:id="@+id/button3"
-                android:textColor="#eeeeff"
-                android:background="#ff5cbeff"
-                android:clickable="true"
-                android:onClick="showSchedule" />
-
-            <Button
-                android:layout_height="wrap_content"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:padding="10dp"
                 android:text="Set Alarm"
                 android:id="@+id/button4"
                 android:textColor="#eeeeff"
