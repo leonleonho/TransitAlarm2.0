@@ -17,69 +17,37 @@
         android:layout_height="wrap_content"
         android:text="Get Details"
         android:textColor="#ffffff"
-        android:id="@+id/JSONObjectButton"
-        android:onClick="getJSONObjectClick"
+        android:id="@+id/StopDetailsButton"
+        android:onClick="getJSONArrayClick"
         android:background="#ff5cbeff"
         android:layout_below="@+id/et"
         android:layout_marginTop="5dp"
         android:layout_centerHorizontal="true"
         />
 
-    <Button
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/JSONObjectButton"
-        android:layout_marginTop="5dp"
-        android:text="Get Array"
-        android:onClick="getJSONArrayClick"
-        android:textColor="#ffffff"
-        android:layout_centerHorizontal="true"
-        android:background="#ff5cbeff"
-        android:id="@+id/JSONArrayButton"/>
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tv"
+        android:layout_below="@id/StopDetailsButton"
         android:textSize="15sp"
         android:textAlignment="center"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="41dp"
-        android:layout_below="@+id/JSONArrayButton" />
+        android:layout_marginTop="41dp" />
 
-    <RadioGroup
-        android:padding="0dp"
-        android:layout_width="fill_parent"
+
+    <Button
         android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:gravity="center"
-        android:id="@+id/radioGroup">
+        android:padding="10dp"
+        android:text="Map"
+        android:id="@+id/button2"
+        android:textColor="#ffffff"
+        android:background="#ff5cbeff"
+        android:clickable="true"
+        android:onClick="gotoMap" />
 
-        <LinearLayout
-            android:padding="10dp"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_gravity="center_horizontal"
-            android:background="#ff5cbeff">
-
-            <Button
-                android:layout_height="wrap_content"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:padding="10dp"
-                android:text="Map"
-                android:id="@+id/button2"
-                android:textColor="#ffffff"
-                android:background="#ff5cbeff"
-                android:clickable="true"
-                android:onClick="gotoMap" />
-
-        </LinearLayout>
-
-    </RadioGroup>
 
 </RelativeLayout>

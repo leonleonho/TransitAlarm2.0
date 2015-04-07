@@ -9,8 +9,12 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class MainActivity extends Activity{
+
+public class MainActivity extends Activity implements AsyncTaskCompletedListener<JSONArray>{
 
     String temp2 = "http://api.translink.ca/rttiapi/v/stops?apikey=uqHksMgJHyOOpCRjXNKM&lat=49.248523&long=-123.108800&radius=500";
     public static TextView tv;
@@ -21,21 +25,42 @@ public class MainActivity extends Activity{
         setContentView(R.layout.activity_main);
         tv = (TextView)findViewById(R.id.tv);
     }
-
+    /*
     public void getJSONObjectClick(View view) {
         EditText et = (EditText)findViewById(R.id.et);
         String busNo = et.getText().toString();
         tv.setText("Loading...");
         String url = "http://api.translink.ca/rttiapi/v1/stops/" + busNo + "?apikey=uqHksMgJHyOOpCRjXNKM";
-        //new Translink(this).execute(url);
+        new Translink(this, Translink.TaskType.STOP_DETAILS).execute(url);
     }
+    */
 
     public void getJSONArrayClick(View view) {
-        tv.setText("Loading...");
+        tv.setText("Loading, Please wait...");
         EditText et = (EditText)findViewById(R.id.et);
-        String busNo = et.getText().toString();
-        String url = "http://api.translink.ca/rttiapi/v1/stops?apikey=uqHksMgJHyOOpCRjXNKM&lat=49.248523&long=-123.108800&radius=500";
-        //new Translink(this, Translink.TaskType.STOP_ARRAY).execute(url);
+        String stopNo = et.getText().toString();
+        String url = "http://api.translink.ca/rttiapi/v1/stops/"+stopNo+"/estimates?apikey=uqHksMgJHyOOpCRjXNKM";
+        //String url = "http://api.translink.ca/rttiapi/v1/stops?apikey=uqHksMgJHyOOpCRjXNKM&lat=49.248523&long=-123.108800&radius=500";
+        new Translink(this, Translink.TaskType.STOP_DETAILS).execute(url);
+    }
+
+    @Override
+    public void onTaskComplete(JSONArray result, Translink.TaskType type) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            for (int i = 0; i < result.length(); ++i) {
+                JSONObject temp = result.getJSONObject(i);
+                sb.append(temp.getString("RouteName") + "\n");
+                JSONArray schedules = temp.getJSONArray("Schedules");
+                for (int j = 0; j < schedules.length(); ++j) {
+                    JSONObject time = schedules.getJSONObject(j);
+                    sb.append("\t" + time.getString("ExpectedLeaveTime") + "\n");
+                }
+            }
+            tv.setText(sb.toString());
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override
@@ -69,4 +94,6 @@ public class MainActivity extends Activity{
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
     }
+
+
 }
