@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">TransitAlarm2.0</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_maps">Map</string>
-    <string name="title_activity_alarm_page">AlarmPage</string>
+    <string name="app_name">TransitAlarm</string>
+    <string name="hello_world">TransitAlarm</string>
+    <string name="action_settings">TransitAlarm</string>
+    <string name="title_activity_maps">TransitAlarm</string>
+    <string name="title_activity_alarm_page">TransitAlarm</string>
 
 </resources>
